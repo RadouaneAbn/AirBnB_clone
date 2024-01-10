@@ -32,13 +32,12 @@ class FileStorage:
     # @objects.setter
     def reload(self):
         """ setter for the `__file_path` private attribute """
+        from ..base_model import BaseModel
         if os.path.exists(self.__file_path):
             with open(self.__file_path, 'r', encoding='utf-8') as f:
                 data = f.read()
             if data.strip():
                 data = json.loads(data)
                 for key, value in data.items():
-                    class_name, obj_id = key.split('.')
-                    class_obj = globals()[class_name]
-                    self.__objects[key] = class_obj(**value)
+                    self.__objects[key] = BaseModel(**value)
                 # self.__objects.update(json.loads(data))
