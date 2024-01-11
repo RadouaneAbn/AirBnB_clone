@@ -35,7 +35,8 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, line):
-        """ Create a new instance """
+        """ create <classname>
+        Create a new instance from the <classname> """
         if line:
             class_name = line.split()[0]
             try:
@@ -49,7 +50,8 @@ class HBNBCommand(cmd.Cmd):
             print(class_missing)
 
     def do_show(self, line):
-        """ print string representation of an instance """
+        """ show <classname> <id>
+        print string representation of the instance """
 
         args = line.split()
         if len(args) == 0:
@@ -73,10 +75,9 @@ class HBNBCommand(cmd.Cmd):
         except Exception:
             print(inst_missing)
 
-
     def do_destroy(self, line=""):
-        """ deletes an instance """
-
+        """ destroy <classname> <id>
+        deletes the given instance `can't be reverted` """
         args = line.split()
         if len(args) == 0:
             print(class_missing)
@@ -95,13 +96,16 @@ class HBNBCommand(cmd.Cmd):
         key = f"{args[0]}.{args[1]}"
         all_inst = storage.all()
         try:
-            #print(storage.__objects)
+            # print(storage.__objects)
             all_inst.pop(key)
             storage.save()
         except Exception:
             print(inst_missing)
 
     def do_all(self, line):
+        """ all <classname>
+        shows all the instance of the <classname>/the all classes
+        if <classname> isn't specified """
         all_inst = storage.all()
         if line:
             class_name = line.split()[0]
@@ -112,7 +116,7 @@ class HBNBCommand(cmd.Cmd):
                 print(class_nexist)
                 return
 
-            pattern = re.compile(f"{class_name}\.\w+")
+            pattern = re.compile(rf"{class_name}\.\w+")
             for key, value in all_inst.items():
                 if pattern.match(key):
                     print(value)
@@ -122,10 +126,13 @@ class HBNBCommand(cmd.Cmd):
                 print(value)
 
     def do_update(self, line):
-        """ update <class name> <id> <attribute name> "<attribute value>" """
-        args = shlex.split(line) # this splits the line respecting "--"
+        """ update <class name> <id> <attribute name> <attribute> <value>
+        updates an attribute in a specific classname by a given value"""
+        args = shlex.split(line)    # this splits the line respecting "--"
         if len(args) == 0:
             print(class_missing)
+            return
+
         try:
             globals()[args[0]]
         except KeyError:
@@ -134,24 +141,30 @@ class HBNBCommand(cmd.Cmd):
 
         if len(args) == 1:
             print(id_missing)
+            return
+
+        all_inst = storage.all()
+        key = f"{args[0]}.{args[1]}"
+        try:
+            cur = all_inst[key]
+        except KeyError:
+            print(inst_missing)
+            return
 
         if len(args) == 2:
             print(attr_name_missing)
+            return
+
+        if args[2] in ['created_at', 'updated_at', 'id']:
+            return
 
         if len(args) == 3:
             print(attr_value_missing)
+            return
 
-        key = f"{args[0]}.{args[1]}"
-        all_inst = storage.all()
-
-        try:
-            cur = all_inst[key]
-            #cur.__dict__[args[2]] = str(args[3])
-            setattr(cur, args[2], args[3])
-            storage.save()
-        except Exception:
-            raise(Exception)
-            print(inst_missing)
+        # cur.__dict__[args[2]] = str(args[3])
+        setattr(cur, args[2], args[3])
+        storage.save()
 
 
 if __name__ == '__main__':
