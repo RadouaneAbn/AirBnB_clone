@@ -18,7 +18,7 @@ class FileStorage:
     # @objects.setter
     def new(self, obj):
         """ setter for the `__objects` private attribute """
-        self.__objects.update({f"{type(obj).__name__}.{obj.id}": obj})
+        self.__objects.update({f"{obj.__class__.__name__}.{obj.id}": obj})
 
     # @property
     def save(self):
@@ -32,12 +32,18 @@ class FileStorage:
     # @objects.setter
     def reload(self):
         """ setter for the `__file_path` private attribute """
+        from ..user import User
         from ..base_model import BaseModel
+        available = ['User', 'BaseMode']
         if os.path.exists(self.__file_path):
             with open(self.__file_path, 'r', encoding='utf-8') as f:
                 data = f.read()
             if data.strip():
                 data = json.loads(data)
                 for key, value in data.items():
-                    self.__objects[key] = BaseModel(**value)
+                    key_val = key.split(".")[0]
+                    if key_val == available[0]:
+                        self.__objects[key] = User(**value)
+                    elif key_val == available[1]:
+                        self.__objects[key] = BaseModel(**value)
                 # self.__objects.update(json.loads(data))

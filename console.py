@@ -5,6 +5,7 @@ import cmd
 import re
 import shlex
 from models.base_model import BaseModel
+from models.user import User
 from models import storage
 
 class_missing = "** class name missing **"
@@ -107,6 +108,7 @@ class HBNBCommand(cmd.Cmd):
         shows all the instance of the <classname>/the all classes
         if <classname> isn't specified """
         all_inst = storage.all()
+        print(all_inst)
         if line:
             class_name = line.split()[0]
 
@@ -120,7 +122,6 @@ class HBNBCommand(cmd.Cmd):
             for key, value in all_inst.items():
                 if pattern.match(key):
                     print(value)
-
         else:
             for key, value in all_inst.items():
                 print(value)
