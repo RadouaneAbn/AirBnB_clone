@@ -4,6 +4,7 @@
 import json
 import os
 
+
 class FileStorage:
     """ serializes instances to a JSON file and deserializes
     JSON file to instances """
@@ -34,7 +35,7 @@ class FileStorage:
         """ setter for the `__file_path` private attribute """
         from ..user import User
         from ..base_model import BaseModel
-        available = ['User', 'BaseMode']
+        available = ['User', 'BaseModel']
         if os.path.exists(self.__file_path):
             with open(self.__file_path, 'r', encoding='utf-8') as f:
                 data = f.read()

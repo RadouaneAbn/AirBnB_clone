@@ -97,7 +97,6 @@ class HBNBCommand(cmd.Cmd):
         key = f"{args[0]}.{args[1]}"
         all_inst = storage.all()
         try:
-            # print(storage.__objects)
             all_inst.pop(key)
             storage.save()
         except Exception:
@@ -108,7 +107,6 @@ class HBNBCommand(cmd.Cmd):
         shows all the instance of the <classname>/the all classes
         if <classname> isn't specified """
         all_inst = storage.all()
-        print(all_inst)
         if line:
             class_name = line.split()[0]
 
