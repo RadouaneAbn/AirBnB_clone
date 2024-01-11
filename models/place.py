@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # contains the `Place` class
 ###########################
-from . import BaseModel
+from models.base_model import BaseModel
 
 
 class Place(BaseModel):

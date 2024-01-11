@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # contains the `State` class
 ############################
-from . import BaseModel
+from models.base_model import BaseModel
 
 
 class State(BaseModel):

@@ -37,13 +37,17 @@ class FileStorage:
         from ..base_model import BaseModel
         from ..amenity import Amenity
         from ..review import Review
-        available = ['User', 'BaseModel', 'Amenity', 'Review']
+        from ..city import City
+        from ..place import Place
+        from ..state import State
+        available = ['User', 'BaseModel', 'Amenity', 'Review', 'City', 'Place',
+                     'State']
         if os.path.exists(self.__file_path):
             with open(self.__file_path, 'r', encoding='utf-8') as f:
                 data = f.read()
             if data.strip():
                 data = json.loads(data)
-                for key, value in data.items():
+                for key, value in data.items():   # key = mode.id
                     key_val = key.split(".")[0]
                     if key_val == available[0]:
                         self.__objects[key] = User(**value)
@@ -53,4 +57,10 @@ class FileStorage:
                         self.__objects[key] = Amenity(**value)
                     elif key_val == available[3]:
                         self.__objects[key] = Review(**value)
+                    elif key_val == available[4]:
+                        self.__objects[key] = City(**value)
+                    elif key_val == available[5]:
+                        self.__objects[key] = Place(**value)
+                    elif key_val == available[6]:
+                        self.__objects[key] = State(**value)
                 # self.__objects.update(json.loads(data))
