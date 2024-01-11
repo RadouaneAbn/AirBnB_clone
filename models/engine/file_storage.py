@@ -41,6 +41,7 @@ class FileStorage:
             if data.strip():
                 data = json.loads(data)
                 for key, value in data.items():
+                    print(key)  # GDB
                     key_val = key.split(".")[0]
                     if key_val == available[0]:
                         self.__objects[key] = User(**value)

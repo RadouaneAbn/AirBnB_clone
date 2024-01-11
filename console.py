@@ -108,7 +108,7 @@ class HBNBCommand(cmd.Cmd):
         shows all the instance of the <classname>/the all classes
         if <classname> isn't specified """
         all_inst = storage.all()
-        print(all_inst)
+        print(all_inst)         # GDB
         if line:
             class_name = line.split()[0]
 
