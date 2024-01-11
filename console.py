@@ -6,6 +6,8 @@ import re
 import shlex
 from models.base_model import BaseModel
 from models.user import User
+from models.amenity import Amenity
+from models.review import Review
 from models import storage
 
 class_missing = "** class name missing **"

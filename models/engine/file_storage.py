@@ -35,7 +35,9 @@ class FileStorage:
         """ setter for the `__file_path` private attribute """
         from ..user import User
         from ..base_model import BaseModel
-        available = ['User', 'BaseModel']
+        from ..amenity import Amenity
+        from ..review import Review
+        available = ['User', 'BaseModel', 'Amenity', 'Review']
         if os.path.exists(self.__file_path):
             with open(self.__file_path, 'r', encoding='utf-8') as f:
                 data = f.read()
@@ -47,4 +49,8 @@ class FileStorage:
                         self.__objects[key] = User(**value)
                     elif key_val == available[1]:
                         self.__objects[key] = BaseModel(**value)
+                    elif key_val == available[2]:
+                        self.__objects[key] = Amenity(**value)
+                    elif key_val == available[3]:
+                        self.__objects[key] = Review(**value)
                 # self.__objects.update(json.loads(data))
