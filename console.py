@@ -4,6 +4,7 @@
 import cmd
 import re
 import shlex
+import sys
 from models.base_model import BaseModel
 from models.user import User
 from models.amenity import Amenity
@@ -13,81 +14,17 @@ from models.place import Place
 from models.state import State
 from models import storage
 
-CREATE = 1
-
-class_missing = "** class name missing **"
-class_nexist = "** class doesn't exist **"
-id_missing = "** instance id missing **"
-inst_missing = "** no instance found **"
-attr_name_missing = "** attribute name missing **"
-attr_value_missing = "** value missing **"
-
-
-def extract(line):
-    cmd, name, args = None, None, None
-
-    # this next line check for input fomat ==> <class_name>.command(args)
-    result = re.match(r'^\s*(\w+)\.(\w+)\((?:(\".*\"))?\)\s*$', line)
-    if result:
-        name = result.group(1)
-        cmd = result.group(2)
-        args = result.group(3)
-
-    # this next two line cleans the input
-    # Example: ("test", "the", "cleaner method")
-    #        ==> 'test the "cleaner method"'
-    if args:
-        args = args.replace(',', '')
-        args = re.sub(r'"([^"\s]*)"', r'\1', args)
-
-    # if not match is found the return will be None, None, None
-    return cmd, name, args
-
-
-def class_check(args):
-    if len(args) == 0:
-        print(class_missing)
-        return False
-
-    class_name = args[0]
-    if class_name not in globals():
-        print(class_nexist)
-        return False
-
-    return True
-
-
-def id_check(args, instances):
-    if len(args) == 1:
-        print(id_missing)
-        return False
-
-    key = f"{args[0]}.{args[1]}"
-    if key not in instances.keys():
-        print(inst_missing)
-        return False
-
-    return True
-
-
-def attribute_check(args):
-    if len(args) == 2:
-        print(attr_name_missing)
-        return False
-
-    if args[2] in ['created_at', 'updated_at', 'id']:
-        return False
-
-    if len(args) == 3:
-        print(attr_value_missing)
-        return False
-
-    return True
-
 
 class HBNBCommand(cmd.Cmd):
     """ the console interpreter """
     prompt = "(hbnb) "
+    # macros ---------------------------------
+    class_missing = "** class name missing **"
+    class_nexist = "** class doesn't exist **"
+    id_missing = "** instance id missing **"
+    inst_missing = "** no instance found **"
+    attr_name_missing = "** attribute name missing **"
+    attr_value_missing = "** value missing **"
 
     def do_quit(self, line):
         """ quits the program """
@@ -109,7 +46,7 @@ class HBNBCommand(cmd.Cmd):
             Create a new instance from the <classname>
         """
         args = line.split()
-        if not class_check(args):
+        if not self.class_check(args):
             return
 
         class_obj = globals()[args[0]]
@@ -123,9 +60,9 @@ class HBNBCommand(cmd.Cmd):
         """
         args = line.split()
         all_inst = storage.all()
-        if not class_check(args):
+        if not self.class_check(args):
             return
-        if not id_check(args, all_inst):
+        if not self.id_check(args, all_inst):
             return
 
         key = f"{args[0]}.{args[1]}"
@@ -137,9 +74,9 @@ class HBNBCommand(cmd.Cmd):
         """
         args = line.split()
         all_inst = storage.all()
-        if not class_check(args):
+        if not self.class_check(args):
             return
-        if not id_check(args, all_inst):
+        if not self.id_check(args, all_inst):
             return
 
         key = f"{args[0]}.{args[1]}"
@@ -155,7 +92,7 @@ class HBNBCommand(cmd.Cmd):
         args = line.split()
         obj_list = []
         if line:
-            if not class_check(args):
+            if not self.class_check(args):
                 return
             attr = rf"{line.split()[0]}\.\w+"  # to get a specific class
         else:
@@ -169,17 +106,17 @@ class HBNBCommand(cmd.Cmd):
         print(obj_list)
 
     def do_update(self, line):
-        """ update <class name> <id> <attribute name> <attribute> <value>
+        """ update <class name> <id> <attribute> <value>
             updates an attribute in a specific classname by a given value
         """
         args = shlex.split(line)  # this splits the line respecting "quotes"
         all_inst = storage.all()
 
-        if not class_check(args):
+        if not self.class_check(args):
             return
-        if not id_check(args, all_inst):
+        if not self.id_check(args, all_inst):
             return
-        if not attribute_check(args):
+        if not self.attribute_check(args):
             return
 
         key = f"{args[0]}.{args[1]}"
@@ -187,7 +124,7 @@ class HBNBCommand(cmd.Cmd):
         setattr(wanted_inst, args[2], args[3])
         storage.save()
 
-    def do_count(self, name):
+    def count(self, name):
         """ Print the count of existing class instances """
         list_inst = storage.all()
         class_list = [key for key in list_inst.keys() if name in key]
@@ -195,20 +132,80 @@ class HBNBCommand(cmd.Cmd):
 
     def default(self, line):
         """ Handles the commandes like this <class_name>.command(args) """
-
         function_list = {"all": self.do_all,
-                         "count": self.do_count,
+                         "count": self.count,
                          "show": self.do_show,
                          "destroy": self.do_destroy,
                          "update": self.do_update}
 
-        cmd, class_name, args = extract(line)
+        cmd, class_name, args = self.extract(line)
         if not cmd and not class_name and not args:
             print("*** Unknown syntax: " + line)
             return
 
         final_arg = f"{class_name} {args}" if args else f"{class_name}"
         return function_list[cmd](final_arg)
+
+    # helpers ------------------------------------------------
+    def extract(self, line):
+        cmd, name, args = None, None, None
+
+        # this next line check for input fomat ==> <class_name>.command(args)
+        result = re.match(r'^\s*(\w+)\.(\w+)\((?:([{"\'].*["\'}]))?\)\s*$', line)
+        if result:
+            name = result.group(1)
+            cmd = result.group(2)
+            args = result.group(3)
+
+            # this next two line cleans the input
+            # Example: ("test", "the", "cleaner method")
+            #        ==> 'test the "cleaner method"'
+        if args:
+            args = args.replace(',', '')
+            args = re.sub(r'(["\'])([^"\s]*)\1', r'\2', args)
+
+        # if not match is found the return will be None, None, None
+        return cmd, name, args
+
+    def class_check(self, args):
+        if len(args) == 0:
+            print(self.class_missing)
+            return False
+
+        class_name = args[0]
+        if class_name not in globals():
+            print(self.class_nexist)
+            return False
+
+        return True
+
+
+    def id_check(self, args, instances):
+        if len(args) == 1:
+            print(self.id_missing)
+            return False
+
+        key = f"{args[0]}.{args[1]}"
+        if key not in instances.keys():
+            print(self.inst_missing)
+            return False
+
+        return True
+
+
+    def attribute_check(self, args):
+        if len(args) == 2:
+            print(self.attr_name_missing)
+            return False
+
+        if args[2] in ['created_at', 'updated_at', 'id']:
+            return False
+
+        if len(args) == 3:
+            print(self.attr_value_missing)
+            return False
+
+        return True
 
 
 if __name__ == '__main__':
