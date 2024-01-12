@@ -12,4 +12,3 @@ class City(BaseModel):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-    pass
