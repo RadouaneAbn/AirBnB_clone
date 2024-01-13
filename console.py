@@ -113,7 +113,8 @@ class HBNBCommand(cmd.Cmd):
             print(self.class_missing)
             return
 
-        parsed_line = re.match(r'^(\S*)\s?(\S*)\s?("[^"]+"|\S*)?\s?("[^"]+"|\S*)', line)
+        parsed_line = re.match(
+            r'^(\S*)\s?(\S*)\s?("[^"]+"|\S*)?\s?("[^"]+"|\S*)', line)
         args = list(parsed_line.groups())
 
         # args = shlex.split(line)  # this splits the line respecting "quotes"
@@ -127,14 +128,13 @@ class HBNBCommand(cmd.Cmd):
             return
         if not self.attribute_check(args):
             return
-        
+
         key, value = args[2], args[3]
- 
+
         try:
             value = eval(value)
         except Exception:
             pass
-        
 
         search_key = f"{args[0]}.{args[1]}"
         wanted_inst = all_inst[search_key]
@@ -171,26 +171,29 @@ class HBNBCommand(cmd.Cmd):
     # helpers ------------------------------------------------
     def extract(self, line):
         cmd, name, args = None, None, None
+        match_2 = None
         arg_list = []
         final_args = []
 
         # this next line check for input fomat ==> <class_name>.command(args)
-        result = re.match(r'^\s*(\w+)\.(\w+)\((?:([{"\']?.*["\'}]?))?\)\s*$', line)
-        if result:
-            name = result.group(1)
-            cmd = result.group(2)
-            args = result.group(3)
+        match_1 = re.match(
+            r'^\s*(\w+)\.(\w+)\((?:([{"\']?.*["\'}]?))?\)\s*$', line)
+        if match_1:
+            name = match_1.group(1)
+            cmd = match_1.group(2)
+            args = match_1.group(3)
 
             # this next two line cleans the input
             # Example: ("test", "the", "cleaner method")
             #        ==> 'test the "cleaner method"'
         if args:
-            result_2 = re.match(r'"?([^"]\S+)"?, {(.+)}', args)
-        if cmd == "update" and result_2:
+            match_2 = re.match(r'"?([^"]\S+)"?, {(.+)}', args)
+
+        if cmd == "update" and match_2:
             # print("match found")
-            id = result_2.group(1)
+            id = match_2.group(1)
             patt = re.compile(r'("[^"]+"|\S+):\s("[^"]+"|[^, ]+)')
-            matches = patt.findall(result_2.group(2))
+            matches = patt.findall(match_2.group(2))
             for match in matches:
                 key = match[0]
                 value = match[1]
@@ -220,12 +223,11 @@ class HBNBCommand(cmd.Cmd):
 
         return True
 
-
     def id_check(self, args, instances):
         if len(args) == 1:
             print(self.id_missing)
             return False
-        
+
         args[1] = args[1].strip('"')
         key = f"{args[0]}.{args[1]}"
         if key not in instances.keys():
@@ -233,7 +235,6 @@ class HBNBCommand(cmd.Cmd):
             return False
 
         return True
-
 
     def attribute_check(self, args):
         if len(args) == 2:
