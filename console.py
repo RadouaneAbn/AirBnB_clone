@@ -156,17 +156,21 @@ class HBNBCommand(cmd.Cmd):
                          "destroy": self.do_destroy,
                          "update": self.do_update}
 
-        cmd, class_name, args = self.extract(line)
-        if not cmd and not class_name and not args:
-            print("*** Unknown syntax: " + line)
-            return
+        cmd, args = self.extract(line)
+        # if not cmd and not class_name and not args:
+        #     print("*** Unknown syntax: " + line)
+        #     return
+        # print(args)
+        for arg in args:
+            function_list[cmd](arg)
 
-        final_arg = f"{class_name} {args}" if args else f"{class_name}"
-        return function_list[cmd](final_arg)
+        return
 
     # helpers ------------------------------------------------
     def extract(self, line):
         cmd, name, args = None, None, None
+        arg_list = []
+        final_args = []
 
         # this next line check for input fomat ==> <class_name>.command(args)
         result = re.match(r'^\s*(\w+)\.(\w+)\((?:([{"\']?.*["\'}]?))?\)\s*$', line)
@@ -179,18 +183,31 @@ class HBNBCommand(cmd.Cmd):
             # Example: ("test", "the", "cleaner method")
             #        ==> 'test the "cleaner method"'
 
+        result_2 = re.match(r'"?([^"]\S+)"?, {(.+)}', args)
+        if cmd == "update" and result_2:
+            # print("match found")
+            id = result_2.group(1)
+            patt = re.compile(r'("[^"]+"|\S+):\s("?[^"]+"?|\S+)')
+            matches = patt.findall(result_2.group(2))
+            for match in matches:
+                key = match[0].strip('"')
+                value = match[1]
+                final_args.append(f"{id} {key} {value}")
 
-        # if cmd == "update" and re.match(r'".*" \{.*\}', args):
-        #     res = re.match(r'"(\w+(?:\-\w+)+)", ({.+})', args)
-        if args:
+        elif args:
             args = args.replace(',', '')
-            args = re.sub(r'(["\'])([^"\s]*)\1', r'\2', args)
+            final_args.append(re.sub(r'(["\'])([^"\s]*)\1', r'\2', args))
+        # print("final_args>> ", end="")
+        # print(final_args)
+        if final_args:
+            for arg in final_args:
+                arg_list.append(f"{name} {arg}" if arg else f"{name}")
+        else:
+            arg_list.append(f"{name}")
 
-        # print(name)  # gdb
-        # print(cmd)  # gdb
-        # print(args)  # gdb
-        # if not match is found the return will be None, None, None
-        return cmd, name, args
+        # print("arg_list>> ", end="")
+        # print(arg_list)
+        return cmd, arg_list
 
     def class_check(self, args):
         # print(args[0])
