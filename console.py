@@ -1,5 +1,9 @@
 #!/usr/bin/python3
-# a program that contains the entry point of the command interpretter
+"""
+a program that contains the entry point of the command interpretter
+it contains the backend interpreter so we can test and make
+everything is working in the console
+"""
 
 import cmd
 import re
@@ -25,7 +29,10 @@ func = {
 
 
 class HBNBCommand(cmd.Cmd):
-    """ the console interpreter """
+    """ the console interpreter to the program
+    it contains the backend interpreter so we can test and make
+    sure everything is working in the console
+    """
     prompt = "(hbnb) "
 
     # macros ---------------------------------
@@ -37,11 +44,11 @@ class HBNBCommand(cmd.Cmd):
     attr_value_missing = "** value missing **"
 
     def do_quit(self, line):
-        """ quits the program """
+        """ Quit command to exit the program """
         return True
 
     def do_EOF(self, line):
-        """ exits the program """
+        """ EOF command to exit the program """
         print()
         return True
 
