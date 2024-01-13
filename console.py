@@ -163,7 +163,7 @@ class HBNBCommand(cmd.Cmd):
             return
         # print(args)
         for arg in args:
-            print(arg)
+            # print(arg)
             function_list[cmd](arg)
 
         return
@@ -199,16 +199,16 @@ class HBNBCommand(cmd.Cmd):
         elif args:
             args = args.replace(',', '')
             final_args.append(re.sub(r'(["\'])([^"\s]*)\1', r'\2', args))
-        print("final_args>> ", end="")
-        print(final_args)
+        # print("final_args>> ", end="")
+        # print(final_args)
         if final_args:
             for arg in final_args:
                 arg_list.append(f"{name} {arg}" if arg else f"{name}")
         elif name:
             arg_list.append(f"{name}")
 
-        print("arg_list>> ", end="")
-        print(arg_list)
+        # print("arg_list>> ", end="")
+        # print(arg_list)
         return cmd, arg_list
 
     def class_check(self, args):
@@ -222,7 +222,7 @@ class HBNBCommand(cmd.Cmd):
 
 
     def id_check(self, args, instances):
-        if not args[1]:
+        if len(args) == 1:
             print(self.id_missing)
             return False
         
@@ -236,7 +236,7 @@ class HBNBCommand(cmd.Cmd):
 
 
     def attribute_check(self, args):
-        if not args[2]:
+        if len(args) == 2:
             print(self.attr_name_missing)
             return False
 
