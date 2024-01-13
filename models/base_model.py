@@ -15,10 +15,8 @@ class BaseModel:
         if kwargs:
             self.__dict__.update({k: v for k, v in kwargs.items()
                                   if k != "__class__"})
-            self.__dict__["created_at"] = datetime.fromisoformat(
-                self.__dict__["created_at"])
-            self.__dict__["updated_at"] = datetime.fromisoformat(
-                self.__dict__["updated_at"])
+            self.created_at = datetime.fromisoformat(self.created_at)
+            self.updated_at = datetime.fromisoformat(self.updated_at)
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
