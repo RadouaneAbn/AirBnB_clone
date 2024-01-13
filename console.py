@@ -193,7 +193,7 @@ class HBNBCommand(cmd.Cmd):
         return cmd, name, args
 
     def class_check(self, args):
-        print(args[0])
+        # print(args[0])
         args[0] = args[0].strip('"')
         if args[0] not in globals():
             print(self.class_nexist)
