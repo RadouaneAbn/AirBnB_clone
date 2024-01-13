@@ -1,7 +1,6 @@
 #!/usr/bin/pyhton
-
 # a program that contains the entry point of the command interpretter
-######################
+
 import cmd
 import re
 import shlex
@@ -36,8 +35,6 @@ class HBNBCommand(cmd.Cmd):
     inst_missing = "** no instance found **"
     attr_name_missing = "** attribute name missing **"
     attr_value_missing = "** value missing **"
-
-    
 
     def do_quit(self, line):
         """ quits the program """
