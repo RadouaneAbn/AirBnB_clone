@@ -3,8 +3,6 @@
 ######################
 import cmd
 import re
-import shlex
-import sys
 from models.base_model import BaseModel
 from models.user import User
 from models.amenity import Amenity
@@ -18,6 +16,7 @@ from models import storage
 class HBNBCommand(cmd.Cmd):
     """ the console interpreter """
     prompt = "(hbnb) "
+
     # macros ---------------------------------
     class_missing = "** class name missing **"
     class_nexist = "** class doesn't exist **"
@@ -109,8 +108,18 @@ class HBNBCommand(cmd.Cmd):
         """ update <class name> <id> <attribute> <value>
             updates an attribute in a specific classname by a given value
         """
-        args = shlex.split(line)  # this splits the line respecting "quotes"
+        # print(line)
+        if not line:
+            print(self.class_missing)
+            return
+
+        parsed_line = re.match(r'^(\S*)\s?(\S*)\s?("[^"]+"|\S*)?\s?("[^"]+"|\S*)', line)
+        args = list(parsed_line.groups())
+
+        # args = shlex.split(line)  # this splits the line respecting "quotes"
+        # print(args)
         all_inst = storage.all()
+        # data_type = int
 
         if not self.class_check(args):
             return
@@ -118,10 +127,19 @@ class HBNBCommand(cmd.Cmd):
             return
         if not self.attribute_check(args):
             return
+        
+        key, value = args[2], args[3]
+ 
+        try:
+            value = eval(value)
+        except Exception:
+            pass
+        
 
-        key = f"{args[0]}.{args[1]}"
-        wanted_inst = all_inst[key]
-        setattr(wanted_inst, args[2], args[3])
+        search_key = f"{args[0]}.{args[1]}"
+        wanted_inst = all_inst[search_key]
+        # value = expected_type(value)
+        setattr(wanted_inst, key, value)
         storage.save()
 
     def count(self, name):
@@ -151,7 +169,7 @@ class HBNBCommand(cmd.Cmd):
         cmd, name, args = None, None, None
 
         # this next line check for input fomat ==> <class_name>.command(args)
-        result = re.match(r'^\s*(\w+)\.(\w+)\((?:([{"\'].*["\'}]))?\)\s*$', line)
+        result = re.match(r'^\s*(\w+)\.(\w+)\((?:([{"\']?.*["\'}]?))?\)\s*$', line)
         if result:
             name = result.group(1)
             cmd = result.group(2)
@@ -160,20 +178,24 @@ class HBNBCommand(cmd.Cmd):
             # this next two line cleans the input
             # Example: ("test", "the", "cleaner method")
             #        ==> 'test the "cleaner method"'
+
+
+        # if cmd == "update" and re.match(r'".*" \{.*\}', args):
+        #     res = re.match(r'"(\w+(?:\-\w+)+)", ({.+})', args)
         if args:
             args = args.replace(',', '')
             args = re.sub(r'(["\'])([^"\s]*)\1', r'\2', args)
 
+        # print(name)  # gdb
+        # print(cmd)  # gdb
+        # print(args)  # gdb
         # if not match is found the return will be None, None, None
         return cmd, name, args
 
     def class_check(self, args):
-        if len(args) == 0:
-            print(self.class_missing)
-            return False
-
-        class_name = args[0]
-        if class_name not in globals():
+        print(args[0])
+        args[0] = args[0].strip('"')
+        if args[0] not in globals():
             print(self.class_nexist)
             return False
 
@@ -181,10 +203,11 @@ class HBNBCommand(cmd.Cmd):
 
 
     def id_check(self, args, instances):
-        if len(args) == 1:
+        if not args[1]:
             print(self.id_missing)
             return False
-
+        
+        args[1] = args[1].strip('"')
         key = f"{args[0]}.{args[1]}"
         if key not in instances.keys():
             print(self.inst_missing)
@@ -194,14 +217,15 @@ class HBNBCommand(cmd.Cmd):
 
 
     def attribute_check(self, args):
-        if len(args) == 2:
+        if not args[2]:
             print(self.attr_name_missing)
             return False
 
+        args[2] = args[2].strip('"')
         if args[2] in ['created_at', 'updated_at', 'id']:
             return False
 
-        if len(args) == 3:
+        if not args[3]:
             print(self.attr_value_missing)
             return False
 
