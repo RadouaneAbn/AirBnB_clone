@@ -189,7 +189,7 @@ class HBNBCommand(cmd.Cmd):
         if cmd == "update" and result_2:
             # print("match found")
             id = result_2.group(1)
-            patt = re.compile(r'("[^"]+"|\S+):\s("?[^"]+"?|\S+)')
+            patt = re.compile(r'("[^"]+"|\S+):\s("[^"]+"|[^, ]+)')
             matches = patt.findall(result_2.group(2))
             for match in matches:
                 key = match[0]
