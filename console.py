@@ -4,7 +4,6 @@
 import cmd
 import re
 import shlex
-import sys
 from models.base_model import BaseModel
 from models.user import User
 from models.amenity import Amenity
@@ -14,10 +13,21 @@ from models.place import Place
 from models.state import State
 from models import storage
 
+func = {
+        "BaseModel": BaseModel,
+        "User": User,
+        "Amenity": Amenity,
+        "Review": Review,
+        "City": City,
+        "Place": Place,
+        "State": State
+    }
+
 
 class HBNBCommand(cmd.Cmd):
     """ the console interpreter """
     prompt = "(hbnb) "
+
     # macros ---------------------------------
     class_missing = "** class name missing **"
     class_nexist = "** class doesn't exist **"
@@ -25,6 +35,8 @@ class HBNBCommand(cmd.Cmd):
     inst_missing = "** no instance found **"
     attr_name_missing = "** attribute name missing **"
     attr_value_missing = "** value missing **"
+
+    
 
     def do_quit(self, line):
         """ quits the program """
@@ -49,7 +61,7 @@ class HBNBCommand(cmd.Cmd):
         if not self.class_check(args):
             return
 
-        class_obj = globals()[args[0]]
+        class_obj = func[args[0]]
         new_obj = class_obj()
         new_obj.save()
         print(new_obj.id)
@@ -177,7 +189,7 @@ class HBNBCommand(cmd.Cmd):
             return False
 
         class_name = args[0]
-        if class_name not in globals():
+        if class_name not in func.keys():
             print(self.class_nexist)
             return False
 
