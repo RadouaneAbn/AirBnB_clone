@@ -140,7 +140,7 @@ class HBNBCommand(cmd.Cmd):
         wanted_inst = all_inst[search_key]
         # value = expected_type(value)
         setattr(wanted_inst, key, value)
-        storage.save()
+        wanted_inst.save()
 
     def count(self, name):
         """ Print the count of existing class instances """
@@ -192,7 +192,7 @@ class HBNBCommand(cmd.Cmd):
             patt = re.compile(r'("[^"]+"|\S+):\s("?[^"]+"?|\S+)')
             matches = patt.findall(result_2.group(2))
             for match in matches:
-                key = match[0].strip('"')
+                key = match[0]
                 value = match[1]
                 final_args.append(f"{id} {key} {value}")
 
