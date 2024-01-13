@@ -1,4 +1,4 @@
-#!/usr/bin/pyhton
+#!/usr/bin/pyhton3
 # a program that contains the entry point of the command interpretter
 
 import cmd
