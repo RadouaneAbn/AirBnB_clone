@@ -1,5 +1,9 @@
 #!/usr/bin/python3
-# a program that contains the entry point of the command interpretter
+"""
+a program that contains the entry point of the command interpretter
+it contains the backend interpreter so we can test and make
+everything is working in the console
+"""
 
 import cmd
 import re
@@ -25,7 +29,10 @@ func = {
 
 
 class HBNBCommand(cmd.Cmd):
-    """the console interpreter"""
+    """ the console interpreter to the program
+    it contains the backend interpreter so we can test and make
+    sure everything is working in the console
+    """
     prompt = "(hbnb) "
 
     # macros ---------------------------------
@@ -37,27 +44,23 @@ class HBNBCommand(cmd.Cmd):
     attr_value_missing = "** value missing **"
 
     def do_quit(self, line):
-        """Quit command to exit the program
-"""
+        """ Quit command to exit the program """
         return True
 
     def do_EOF(self, line):
-        """EOF command to exit the program
-"""
+        """ EOF command to exit the program """
         print()
         return True
 
     def emptyline(self):
         """Called when an empty line is entered in response to the prompt.
-If this method is not overridden, it repeats the last nonempty
-command entered.
-"""
+        If this method is not overridden, it repeats the last nonempty
+        command entered."""
         pass
 
     def do_create(self, line):
         """create <classname>
-Create a new instance from the <classname>
-"""
+        Create a new instance from the <classname>"""
         args = line.split()
         if not self.class_check(args):
             return
@@ -69,8 +72,7 @@ Create a new instance from the <classname>
 
     def do_show(self, line):
         """show <classname> <id>
-print string representation of the instance
-"""
+        print string representation of the instance"""
         args = line.split()
         all_inst = storage.all()
         if not self.class_check(args):
@@ -83,8 +85,7 @@ print string representation of the instance
 
     def do_destroy(self, line):
         """destroy <classname> <id>
-deletes the given instance `can't be reverted`
-"""
+        deletes the given instance `can't be reverted`"""
         args = line.split()
         all_inst = storage.all()
         if not self.class_check(args):
@@ -98,9 +99,8 @@ deletes the given instance `can't be reverted`
 
     def do_all(self, line):
         """all <classname>
-shows all the instance of the <classname>/the all classes
-if <classname> isn't specified
-"""
+        shows all the instance of the <classname>/the all classes
+        if <classname> isn't specified"""
 
         all_inst = storage.all()
         args = line.split()
@@ -121,8 +121,7 @@ if <classname> isn't specified
 
     def do_update(self, line):
         """update <class name> <id> <attribute> <value>
-updates an attribute in a specific classname by a given value
-"""
+        updates an attribute in a specific classname by a given value"""
         args = shlex.split(line)  # this splits the line respecting "quotes"
         all_inst = storage.all()
 
@@ -140,16 +139,14 @@ updates an attribute in a specific classname by a given value
 
     def count(self, name):
         """count <class name>
-prints the count of class instances
-"""
+        prints the count of class instances"""
         list_inst = storage.all()
         class_list = [key for key in list_inst.keys() if name in key]
         print(len(class_list))
 
     def default(self, line):
         """<class_name>.command(arguments)
-handles other command
-"""
+        handles other command"""
         function_list = {"all": self.do_all,
                          "count": self.count,
                          "show": self.do_show,
@@ -167,8 +164,7 @@ handles other command
     # helpers ------------------------------------------------
     def extract(self, line):
         """extracts the command and the name and the arguments
-from the input
-"""
+        from the input"""
         cmd, name, args = None, None, None
 
         # this next line check for input fomat ==> <class_name>.command(args)
