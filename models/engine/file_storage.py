@@ -1,6 +1,10 @@
 #!/usr/bin/python3
-# contains the FileStorage class
-####################
+"""
+contains the FileStorage class, which will be the storage handler for
+the whole project, it'll serialize/deserialize and handle the transformation
+between data base (file for now).
+"""
+
 import json
 import os
 
@@ -11,17 +15,14 @@ class FileStorage:
     __file_path = "file.json"
     __objects = {}
 
-    # @property
     def all(self):
         """ getter for the `__objects` private attribute """
         return self.__objects
 
-    # @objects.setter
     def new(self, obj):
         """ setter for the `__objects` private attribute """
         self.__objects.update({f"{obj.__class__.__name__}.{obj.id}": obj})
 
-    # @property
     def save(self):
         """ getter for the `__files_path` private attribute """
         with open(self.__file_path, 'w', encoding='utf-8') as f:
@@ -30,7 +31,6 @@ class FileStorage:
                 out[key] = value.to_dict()
             f.write(json.dumps(out))
 
-    # @objects.setter
     def reload(self):
         """ setter for the `__file_path` private attribute """
         from ..user import User
@@ -63,4 +63,3 @@ class FileStorage:
                         self.__objects[key] = Place(**value)
                     elif key_val == available[6]:
                         self.__objects[key] = State(**value)
-                # self.__objects.update(json.loads(data))
