@@ -59,9 +59,8 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, line):
-        """ create <classname>
-            Create a new instance from the <classname>
-        """
+        """create <classname>
+        Create a new instance from the <classname>"""
         args = line.split()
         if not self.class_check(args):
             return
@@ -72,9 +71,8 @@ class HBNBCommand(cmd.Cmd):
         print(new_obj.id)
 
     def do_show(self, line):
-        """ show <classname> <id>
-            print string representation of the instance
-        """
+        """show <classname> <id>
+        print string representation of the instance"""
         args = line.split()
         all_inst = storage.all()
         if not self.class_check(args):
@@ -86,9 +84,8 @@ class HBNBCommand(cmd.Cmd):
         print(all_inst[key])
 
     def do_destroy(self, line):
-        """ destroy <classname> <id>
-            deletes the given instance `can't be reverted`
-        """
+        """destroy <classname> <id>
+        deletes the given instance `can't be reverted`"""
         args = line.split()
         all_inst = storage.all()
         if not self.class_check(args):
@@ -101,10 +98,10 @@ class HBNBCommand(cmd.Cmd):
         storage.save()
 
     def do_all(self, line):
-        """ all <classname>
-            shows all the instance of the <classname>/the all classes
-            if <classname> isn't specified
-        """
+        """all <classname>
+        shows all the instance of the <classname>/the all classes
+        if <classname> isn't specified"""
+
         all_inst = storage.all()
         args = line.split()
         obj_list = []
@@ -123,9 +120,8 @@ class HBNBCommand(cmd.Cmd):
         print(obj_list)
 
     def do_update(self, line):
-        """ update <class name> <id> <attribute> <value>
-            updates an attribute in a specific classname by a given value
-        """
+        """update <class name> <id> <attribute> <value>
+        updates an attribute in a specific classname by a given value"""
         args = shlex.split(line)  # this splits the line respecting "quotes"
         all_inst = storage.all()
 
@@ -142,13 +138,15 @@ class HBNBCommand(cmd.Cmd):
         storage.save()
 
     def count(self, name):
-        """ Print the count of existing class instances """
+        """count <class name>
+        prints the count of class instances"""
         list_inst = storage.all()
         class_list = [key for key in list_inst.keys() if name in key]
         print(len(class_list))
 
     def default(self, line):
-        """ Handles the commandes like this <class_name>.command(args) """
+        """<class_name>.command(arguments)
+        handles other command"""
         function_list = {"all": self.do_all,
                          "count": self.count,
                          "show": self.do_show,
@@ -165,8 +163,8 @@ class HBNBCommand(cmd.Cmd):
 
     # helpers ------------------------------------------------
     def extract(self, line):
-        """ extracts the command and the name and the arguments
-        from the input """
+        """extracts the command and the name and the arguments
+        from the input"""
         cmd, name, args = None, None, None
 
         # this next line check for input fomat ==> <class_name>.command(args)
@@ -188,7 +186,7 @@ class HBNBCommand(cmd.Cmd):
         return cmd, name, args
 
     def class_check(self, args):
-        """ checks the <classname> and handles it's errors """
+        """checks the <classname> and handles it's errors"""
         if len(args) == 0:
             print(self.class_missing)
             return False
@@ -201,7 +199,7 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def id_check(self, args, instances):
-        """ checks the <id> and handles it's errors """
+        """checks the <id> and handles it's errors"""
         if len(args) == 1:
             print(self.id_missing)
             return False
@@ -214,7 +212,7 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def attribute_check(self, args):
-        """ checks the <attributes> and handles it's errors """
+        """checks the <attributes> and handles it's errors"""
         if len(args) == 2:
             print(self.attr_name_missing)
             return False

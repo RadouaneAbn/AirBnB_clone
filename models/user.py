@@ -1,11 +1,15 @@
 #!/usr/bin/python3
-# contains the `User` class
-###########################
+"""
+contains the `User` class which contains the user's data
+email, password, firstname, last_name
+"""
 from models.base_model import BaseModel
 
 
 class User(BaseModel):
-    """ The User class which will contain the users's data """
+    """ The User class which will contain the users's data
+    like: email, password, firstname, lastname. and it
+    inherates from the partent `BaseModel`."""
 
     email = ""
     password = ""
