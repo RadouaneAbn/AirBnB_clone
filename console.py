@@ -148,10 +148,13 @@ class HBNBCommand(cmd.Cmd):
 
     # helpers ------------------------------------------------
     def extract(self, line):
+        """ extracts the command and the name and the arguments
+        from the input """
         cmd, name, args = None, None, None
 
         # this next line check for input fomat ==> <class_name>.command(args)
-        result = re.match(r'^\s*(\w+)\.(\w+)\((?:([{"\'].*["\'}]))?\)\s*$', line)
+        result = re.match(r'^\s*(\w+)\.(\w+)\((?:([{"\'].*["\'}]))?\)\s*$',
+                          line)
         if result:
             name = result.group(1)
             cmd = result.group(2)
@@ -168,6 +171,7 @@ class HBNBCommand(cmd.Cmd):
         return cmd, name, args
 
     def class_check(self, args):
+        """ checks the <classname> and handles it's errors """
         if len(args) == 0:
             print(self.class_missing)
             return False
@@ -179,8 +183,8 @@ class HBNBCommand(cmd.Cmd):
 
         return True
 
-
     def id_check(self, args, instances):
+        """ checks the <id> and handles it's errors """
         if len(args) == 1:
             print(self.id_missing)
             return False
@@ -192,8 +196,8 @@ class HBNBCommand(cmd.Cmd):
 
         return True
 
-
     def attribute_check(self, args):
+        """ checks the <attributes> and handles it's errors """
         if len(args) == 2:
             print(self.attr_name_missing)
             return False
