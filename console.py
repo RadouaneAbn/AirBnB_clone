@@ -232,7 +232,7 @@ class HBNBCommand(cmd.Cmd):
     def class_check(self, args):
         """checks the <classname> and handles it's errors
 """
-        if len(args) == 0:
+        if len(args) == 0 or not args[0]:
             print(self.class_missing)
             return False
 
@@ -246,7 +246,7 @@ class HBNBCommand(cmd.Cmd):
     def id_check(self, args, instances):
         """checks the <id> and handles it's errors
 """
-        if len(args) == 1:
+        if len(args) == 1 or not args[1]:
             print(self.id_missing)
             return False
 
@@ -261,7 +261,8 @@ class HBNBCommand(cmd.Cmd):
     def attribute_check(self, args):
         """checks the <attributes> and handles it's errors
 """
-        if len(args) == 2:
+
+        if len(args) == 2 or not args[2]:
             print(self.attr_name_missing)
             return False
 
