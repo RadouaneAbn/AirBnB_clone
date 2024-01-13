@@ -1,6 +1,10 @@
-#!/usr/bin/env python3
-# a program that contains the entry point of the command interpretter
-######################
+#!/usr/bin/python3
+"""
+a program that contains the entry point of the command interpretter
+it contains the backend interpreter so we can test and make
+everything is working in the console
+"""
+
 import cmd
 import re
 from models.base_model import BaseModel
@@ -12,9 +16,22 @@ from models.place import Place
 from models.state import State
 from models import storage
 
+func = {
+        "BaseModel": BaseModel,
+        "User": User,
+        "Amenity": Amenity,
+        "Review": Review,
+        "City": City,
+        "Place": Place,
+        "State": State
+    }
+
 
 class HBNBCommand(cmd.Cmd):
-    """ the console interpreter """
+    """ the console interpreter to the program
+    it contains the backend interpreter so we can test and make
+    sure everything is working in the console
+    """
     prompt = "(hbnb) "
 
     # macros ---------------------------------
@@ -26,11 +43,11 @@ class HBNBCommand(cmd.Cmd):
     attr_value_missing = "** value missing **"
 
     def do_quit(self, line):
-        """ quits the program """
+        """ Quit command to exit the program """
         return True
 
     def do_EOF(self, line):
-        """ exits the program """
+        """ EOF command to exit the program """
         print()
         return True
 
@@ -41,22 +58,20 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, line):
-        """ create <classname>
-            Create a new instance from the <classname>
-        """
+        """create <classname>
+        Create a new instance from the <classname>"""
         args = line.split()
         if not self.class_check(args):
             return
 
-        class_obj = globals()[args[0]]
+        class_obj = func[args[0]]
         new_obj = class_obj()
         new_obj.save()
         print(new_obj.id)
 
     def do_show(self, line):
-        """ show <classname> <id>
-            print string representation of the instance
-        """
+        """show <classname> <id>
+        print string representation of the instance"""
         args = line.split()
         all_inst = storage.all()
         if not self.class_check(args):
@@ -68,9 +83,8 @@ class HBNBCommand(cmd.Cmd):
         print(all_inst[key])
 
     def do_destroy(self, line):
-        """ destroy <classname> <id>
-            deletes the given instance `can't be reverted`
-        """
+        """destroy <classname> <id>
+        deletes the given instance `can't be reverted`"""
         args = line.split()
         all_inst = storage.all()
         if not self.class_check(args):
@@ -83,10 +97,10 @@ class HBNBCommand(cmd.Cmd):
         storage.save()
 
     def do_all(self, line):
-        """ all <classname>
-            shows all the instance of the <classname>/the all classes
-            if <classname> isn't specified
-        """
+        """all <classname>
+        shows all the instance of the <classname>/the all classes
+        if <classname> isn't specified"""
+
         all_inst = storage.all()
         args = line.split()
         obj_list = []
@@ -116,9 +130,6 @@ class HBNBCommand(cmd.Cmd):
         parsed_line = re.match(
             r'^(\S*)\s?(\S*)\s?("[^"]+"|\S*)?\s?("[^"]+"|\S*)', line)
         args = list(parsed_line.groups())
-
-        # args = shlex.split(line)  # this splits the line respecting "quotes"
-        # print(args)
         all_inst = storage.all()
         # data_type = int
 
@@ -143,13 +154,15 @@ class HBNBCommand(cmd.Cmd):
         wanted_inst.save()
 
     def count(self, name):
-        """ Print the count of existing class instances """
+        """count <class name>
+        prints the count of class instances"""
         list_inst = storage.all()
         class_list = [key for key in list_inst.keys() if name in key]
         print(len(class_list))
 
     def default(self, line):
-        """ Handles the commandes like this <class_name>.command(args) """
+        """<class_name>.command(arguments)
+        handles other command"""
         function_list = {"all": self.do_all,
                          "count": self.count,
                          "show": self.do_show,
@@ -170,6 +183,8 @@ class HBNBCommand(cmd.Cmd):
 
     # helpers ------------------------------------------------
     def extract(self, line):
+        """extracts the command and the name and the arguments
+        from the input"""
         cmd, name, args = None, None, None
         match_2 = None
         arg_list = []
@@ -215,15 +230,22 @@ class HBNBCommand(cmd.Cmd):
         return cmd, arg_list
 
     def class_check(self, args):
-        # print(args[0])
-        args[0] = args[0].strip('"')
-        if args[0] not in globals():
+        """checks the <classname> and handles it's errors
+"""
+        if len(args) == 0:
+            print(self.class_missing)
+            return False
+
+        class_name = args[0]
+        if class_name not in func.keys():
             print(self.class_nexist)
             return False
 
         return True
 
     def id_check(self, args, instances):
+        """checks the <id> and handles it's errors
+"""
         if len(args) == 1:
             print(self.id_missing)
             return False
@@ -237,6 +259,8 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def attribute_check(self, args):
+        """checks the <attributes> and handles it's errors
+"""
         if len(args) == 2:
             print(self.attr_name_missing)
             return False
