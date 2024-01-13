@@ -154,14 +154,16 @@ class HBNBCommand(cmd.Cmd):
                          "count": self.count,
                          "show": self.do_show,
                          "destroy": self.do_destroy,
-                         "update": self.do_update}
+                         "update": self.do_update,
+                         "create": self.do_create}
 
         cmd, args = self.extract(line)
-        # if not cmd and not class_name and not args:
-        #     print("*** Unknown syntax: " + line)
-        #     return
+        if not args:
+            print("*** Unknown syntax: " + line)
+            return
         # print(args)
         for arg in args:
+            print(arg)
             function_list[cmd](arg)
 
         return
@@ -182,8 +184,8 @@ class HBNBCommand(cmd.Cmd):
             # this next two line cleans the input
             # Example: ("test", "the", "cleaner method")
             #        ==> 'test the "cleaner method"'
-
-        result_2 = re.match(r'"?([^"]\S+)"?, {(.+)}', args)
+        if args:
+            result_2 = re.match(r'"?([^"]\S+)"?, {(.+)}', args)
         if cmd == "update" and result_2:
             # print("match found")
             id = result_2.group(1)
@@ -197,16 +199,16 @@ class HBNBCommand(cmd.Cmd):
         elif args:
             args = args.replace(',', '')
             final_args.append(re.sub(r'(["\'])([^"\s]*)\1', r'\2', args))
-        # print("final_args>> ", end="")
-        # print(final_args)
+        print("final_args>> ", end="")
+        print(final_args)
         if final_args:
             for arg in final_args:
                 arg_list.append(f"{name} {arg}" if arg else f"{name}")
-        else:
+        elif name:
             arg_list.append(f"{name}")
 
-        # print("arg_list>> ", end="")
-        # print(arg_list)
+        print("arg_list>> ", end="")
+        print(arg_list)
         return cmd, arg_list
 
     def class_check(self, args):
