@@ -54,4 +54,3 @@ class FileStorage:
                 for key, value in data.items():  # key = mode.id
                     key_val = key.split(".")[0]
                     self.__objects[key] = classes[key_val](**value)
-

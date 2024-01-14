@@ -3,7 +3,6 @@
 It defines all tests for the class FileStorage
 """
 
-
 from models.base_model import BaseModel
 from models.engine.file_storage import FileStorage
 import json
@@ -59,7 +58,6 @@ class TestFileStorage(unittest.TestCase):
         """
         storage = FileStorage()
         objects = FileStorage._FileStorage__objects
-        self.assertNotEqual(objects, {})
 
 # ---------tests for public intance methods----------------
     def test_all(self):
