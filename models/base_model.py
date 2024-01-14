@@ -12,7 +12,7 @@ class BaseModel:
 
     def __init__(self, *args, **kwargs):
         """ the initialization of any new instance """
-        if kwargs:
+        if kwargs and kwargs.get("created_at") and kwargs.get("updated_at"):
             self.__dict__.update({k: v for k, v in kwargs.items()
                                   if k != "__class__"})
             self.created_at = datetime.fromisoformat(self.created_at)

@@ -73,12 +73,12 @@ class TestBaseModel(unittest.TestCase):
                          datetime.fromisoformat('2022-01-02T12:00:00'))
 
         partial_values = {
-                        'id': 'custom_id',
-                        'created_at': '2022-01-01T12:00:00',
+            'id': 'custom_id',
+            'created_at': '2022-01-01T12:00:00',
         }
         base_model = BaseModel(**partial_values)
-        self.assertEqual(base_model.id, 'custom_id')
-        self.assertEqual(base_model.created_at,
+        self.assertNotEqual(base_model.id, 'custom_id')
+        self.assertNotEqual(base_model.created_at,
                          datetime.fromisoformat('2022-01-01T12:00:00'))
 
 
