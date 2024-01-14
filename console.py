@@ -107,7 +107,7 @@ class HBNBCommand(cmd.Cmd):
         if line:
             if not self.class_check(args):
                 return
-            attr = rf"{line.split()[0]}\.\w+"  # to get a specific class
+            attr = rf"{args[0]}\.\w+"  # to get a specific class
         else:
             attr = ".*"  # to get all classes
         pattern = re.compile(attr)
@@ -141,7 +141,6 @@ class HBNBCommand(cmd.Cmd):
             return
 
         key, value = args[2], args[3]
-
         try:
             value = eval(value)
         except Exception:
@@ -149,7 +148,6 @@ class HBNBCommand(cmd.Cmd):
 
         search_key = f"{args[0]}.{args[1]}"
         wanted_inst = all_inst[search_key]
-        # value = expected_type(value)
         setattr(wanted_inst, key, value)
         wanted_inst.save()
 
