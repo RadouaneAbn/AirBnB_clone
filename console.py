@@ -169,7 +169,7 @@ class HBNBCommand(cmd.Cmd):
                          "create": self.do_create}
 
         cmd, args = self.extract(line)
-        if not args:
+        if not args or cmd not in function_list.keys():
             print("*** Unknown syntax: " + line)
             return
         # print(args)

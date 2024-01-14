@@ -34,6 +34,33 @@ classes = ['BaseModel', 'User', 'City', 'State',
 wrong_classes = ['baseModel', 'user', 'city', 'state',
                  'place', 'amenity', 'review', 'ret']
 
+dicts = {"BaseModel": '{"key": "value"}',
+         "User": '{"full name": "alx SE", "Age": 25, "born": 1986}',
+         "City": '{"name": "Safi", "best location": "sidi bouzid"}',
+         "State": '{"name": "doukala"}',
+         "Place": '{"name": "the kings mantion"}',
+         "Amenity": '{"i have": "no idea what this is"}',
+         "Review": '{"rate": 10}'}
+
+dict_expected = {"BaseModel": ["'key': 'value'"],
+                 "User": ["'full name': 'alx SE'",
+                          "'Age': 25",
+                          "'born': 1986"],
+                 "City": ["'name': 'Safi'",
+                          "'best location': 'sidi bouzid'"],
+                 "State": ["'name': 'doukala'"],
+                 "Place": ["'name': 'the kings mantion'"],
+                 "Amenity": ["'i have': 'no idea what this is'"],
+                 "Review": ["'rate': 10"]}
+
+wrong_dict = {"BaseModel": '{"key": }',
+              "User": '{"full name": "alx SE", "Age": 25, "born": 1986}',
+              "City": '{"name": "Safi", "best location": "sidi bouzid"}',
+              "State": '{"name": "doukala"}',
+              "Place": '{"name": "the kings mantion"}',
+              "Amenity": '{"i have": "no idea what this is"}',
+              "Review": '{"rate": 10}'}
+
 class_missing = "** class name missing **\n"
 no_class = "** class doesn't exist **\n"
 id_missing = "** instance id missing **\n"
@@ -319,8 +346,28 @@ class TestConsole(unittest.TestCase):
             HBNBCommand().onecmd(f"class.count()")
             self.assertEqual(f.getvalue().strip(), "0")
 
+    def test_default_dictionary(self):
+        ids = {}
+        for class_name in classes:
+            with patch('sys.stdout', new=StringIO()) as f:
+                HBNBCommand().onecmd(f"{class_name}.create()")
+                ids[class_name] = f.getvalue().strip('\n')
+
+        for cl in classes:
+            with patch('sys.stdout', new=StringIO()) as f:
+                HBNBCommand().onecmd(
+                    f"{cl}.update(\"{ids[cl]}\", {dicts[cl]})")
+                HBNBCommand().onecmd(f"{cl}.show({ids[cl]})")
+                data = f.getvalue().strip()
+                for string in dict_expected[cl]:
+                    self.assertTrue(string in data)
+
     def test_default_errors(self):
         cmds = ['all', 'create', 'destroy', 'count', 'show', 'update']
+        ucmds = ['mess', 'collect', 'try', 'ret', 'class']
+        ids = {}
+
+        # all the command shouldn't raise an exception
         for cmd in cmds:
             with patch('sys.stdout', new=StringIO()) as f:
                 HBNBCommand().onecmd(f"User.{cmd}")
@@ -331,6 +378,7 @@ class TestConsole(unittest.TestCase):
                 except Exception as e:
                     self.fail(e)
 
+        # no existing class
         for class_name in wrong_classes:
             with patch('sys.stdout', new=StringIO()) as f:
                 HBNBCommand().onecmd(f"{class_name}.create()")
@@ -341,7 +389,46 @@ class TestConsole(unittest.TestCase):
                 HBNBCommand().onecmd(f"{class_name}.show()")
                 self.assertEqual(f.getvalue(), id_missing)
 
-        
+        for class_name in classes:
+            with patch('sys.stdout', new=StringIO()) as f:
+                HBNBCommand().onecmd(f"{class_name}.show(wrong_uuid)")
+                self.assertEqual(f.getvalue(), no_inst)
+
+        for class_name in classes:
+            with patch('sys.stdout', new=StringIO()) as f:
+                HBNBCommand().onecmd(f"{class_name}.create({ignore})")
+                ids[class_name] = f.getvalue().strip('\n')
+
+        for class_name in classes:
+            with patch('sys.stdout', new=StringIO()) as f:
+                HBNBCommand().onecmd(f"{class_name}.update()")
+                self.assertEqual(f.getvalue(), id_missing)
+
+        for class_name in classes:
+            with patch('sys.stdout', new=StringIO()) as f:
+                HBNBCommand().onecmd(
+                    f"{class_name}.update(wrong_id)")
+                self.assertEqual(f.getvalue(), no_inst)
+
+        for class_name in classes:
+            with patch('sys.stdout', new=StringIO()) as f:
+                HBNBCommand().onecmd(
+                    f"{class_name}.update(\"{ids[class_name]}\")")
+                self.assertEqual(f.getvalue(), no_attr_name)
+
+        for class_name in classes:
+            with patch('sys.stdout', new=StringIO()) as f:
+                HBNBCommand().onecmd(
+                    f"{class_name}.update(\"{ids[class_name]}\", "
+                    f"\"full name\")")
+                self.assertEqual(f.getvalue(), no_attr_value)
+
+        for cmd in ucmds:
+            with patch('sys.stdout', new=StringIO()) as f:
+                HBNBCommand().onecmd(f"User.{cmd}()")
+                self.assertEqual(f.getvalue(),
+                                 f"{syn_msg} User.{cmd}()\n")
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
