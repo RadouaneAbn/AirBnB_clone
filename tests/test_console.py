@@ -5,6 +5,7 @@ from io import StringIO
 import re
 import os
 import uuid
+import json
 from unittest.mock import patch
 from console import HBNBCommand
 from models.base_model import BaseModel
@@ -17,6 +18,7 @@ from models.state import State
 from models import FileStorage
 from models import storage
 import unittest
+import console
 
 
 def check_uuid(value):
@@ -81,19 +83,43 @@ EOF  all  create  destroy  help  quit  show  update
 class TestConsole(unittest.TestCase):
     """ Test cases for the console """
 
+    @classmethod
     def setUp(self):
         try:
-            os.remove(json_file)
-        except Exception:
+            os.rename(json_file, "tmp")
+        except IOError:
             pass
+        FileStorage.__objects = {}
         storage._FileStorage__objects = {}
+
+    @classmethod
+    def tearDown(self):
+        try:
+            os.remove(json_file)
+        except IOError:
+            pass
+        try:
+            os.rename("tmp", json_file)
+        except IOError:
+            pass
+
+    def test_docstring(self):
+        """Test docstrings exist in console.py"""
+        self.assertTrue(len(console.__doc__) >= 1)
+
+        """Test docstrings exist in test_console.py"""
+        self.assertTrue(len(self.__doc__) >= 1)
+
+    def test_prompt(self):
+        """Test the prompt of teh console"""
+        self.assertEqual("(hbnb) ", HBNBCommand.prompt)
 
     def test_help(self):
         cmds = ['create', 'show', 'all', 'destroy'
                 'update', 'quit', 'EOF']
         for cmd in cmds:
             with patch('sys.stdout', new=StringIO()) as f:
-                HBNBCommand().onecmd("help {cmd}")
+                HBNBCommand().onecmd(f"help {cmd}")
                 self.assertNotEqual(f.getvalue(), "")
 
         with patch('sys.stdout', new=StringIO()) as f:
@@ -125,14 +151,19 @@ class TestConsole(unittest.TestCase):
 
     def test_create_success(self):
         ids = []
+        inst = {}
         for class_name in classes:
             with patch('sys.stdout', new=StringIO()) as f:
                 HBNBCommand().onecmd(f"create {class_name}")
                 id_tmp = f.getvalue().strip('\n')
                 ids.append(id_tmp)
+                inst[class_name] = f"{class_name}.{id_tmp}"
                 self.assertTrue(check_uuid(id_tmp))
 
-            self.assertTrue(len(ids) == len(set(ids)), "repeted uuid")
+            self.assertTrue(len(ids) == len(set(ids)))
+            with open(json_file, "r") as file:
+                data = json.loads(file.read())
+            self.assertTrue(inst[class_name] in data)
 
     def test_create_error(self):
         with patch('sys.stdout', new=StringIO()) as f:
@@ -178,14 +209,24 @@ class TestConsole(unittest.TestCase):
                 self.assertEqual(f.getvalue(), no_inst)
 
     def test_destroy_success(self):
-        for class_name in classes:
+        inst = {}
+        for cl in classes:
             with patch('sys.stdout', new=StringIO()) as f:
-                HBNBCommand().onecmd(f"create {class_name}")
-                id_tmp = f.getvalue().strip('\n')
+                HBNBCommand().onecmd(f"create {cl}")
+                id_tmp = f.getvalue().strip()
+                inst[cl] = f"{cl}.{id_tmp}"
+
+            with open(json_file, "r") as file:
+                data = json.loads(file.read())
+            self.assertTrue(inst[cl] in data)
 
             with patch('sys.stdout', new=StringIO()) as f:
-                HBNBCommand().onecmd(f"destroy {class_name} {id_tmp}")
-                self.assertFalse(f"{class_name}.{id_tmp}" in storage.all())
+                HBNBCommand().onecmd(f"destroy {cl} {id_tmp}")
+                self.assertFalse(f"{cl}.{id_tmp}" in storage.all())
+
+            with open(json_file, "r") as file:
+                data = json.loads(file.read())
+            self.assertFalse(inst[cl] in data)
 
     def test_destroy_errors(self):
         with patch('sys.stdout', new=StringIO()) as f:
@@ -222,7 +263,6 @@ class TestConsole(unittest.TestCase):
         for class_name in classes:
             with patch('sys.stdout', new=StringIO()) as f:
                 HBNBCommand().onecmd(f"create {class_name}")
-                id_tmp = f.getvalue().strip('\n')
             with patch('sys.stdout', new=StringIO()) as f:
                 HBNBCommand().onecmd(f"all {class_name} {ignore}")
                 tmp_line = f.getvalue().strip('\n')
