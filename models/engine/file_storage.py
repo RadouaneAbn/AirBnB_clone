@@ -40,26 +40,18 @@ class FileStorage:
         from ..city import City
         from ..place import Place
         from ..state import State
-        available = ['User', 'BaseModel', 'Amenity', 'Review', 'City', 'Place',
-                     'State']
+
+        classes = {'User': User, 'BaseModel': BaseModel,
+                   'Amenity': Amenity, 'Review': Review,
+                   'City': City, 'Place': Place,
+                   'State': State}
+
         if os.path.exists(self.__file_path):
             with open(self.__file_path, 'r', encoding='utf-8') as f:
                 data = f.read()
             if data.strip():
                 data = json.loads(data)
-                for key, value in data.items():   # key = mode.id
+                for key, value in data.items():  # key = mode.id
                     key_val = key.split(".")[0]
-                    if key_val == available[0]:
-                        self.__objects[key] = User(**value)
-                    elif key_val == available[1]:
-                        self.__objects[key] = BaseModel(**value)
-                    elif key_val == available[2]:
-                        self.__objects[key] = Amenity(**value)
-                    elif key_val == available[3]:
-                        self.__objects[key] = Review(**value)
-                    elif key_val == available[4]:
-                        self.__objects[key] = City(**value)
-                    elif key_val == available[5]:
-                        self.__objects[key] = Place(**value)
-                    elif key_val == available[6]:
-                        self.__objects[key] = State(**value)
+                    self.__objects[key] = classes[key_val](**value)
+
