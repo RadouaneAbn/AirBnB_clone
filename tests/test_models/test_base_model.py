@@ -60,6 +60,27 @@ class TestBaseModel(unittest.TestCase):
         self.assertNotEqual(model2.created_at, 'hi')
         self.assertNotEqual(model2.updated_at, None)
 
+        obj_values = {
+                        'id': 'custom_id',
+                        'created_at': '2022-01-01T12:00:00',
+                        'updated_at': '2022-01-02T12:00:00'
+        }
+        base_model = BaseModel(**obj_values)
+        self.assertEqual(base_model.id, 'custom_id')
+        self.assertEqual(base_model.created_at,
+                         datetime.fromisoformat('2022-01-01T12:00:00'))
+        self.assertEqual(base_model.updated_at,
+                         datetime.fromisoformat('2022-01-02T12:00:00'))
+
+        partial_values = {
+                        'id': 'custom_id',
+                        'created_at': '2022-01-01T12:00:00',
+        }
+        base_model = BaseModel(**partial_values)
+        self.assertEqual(base_model.id, 'custom_id')
+        self.assertEqual(base_model.created_at,
+                         datetime.fromisoformat('2022-01-01T12:00:00'))
+
 
 if __name__ == '__main__':
     unittest.main()
