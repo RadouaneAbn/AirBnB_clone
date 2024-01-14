@@ -309,7 +309,7 @@ class TestConsole(unittest.TestCase):
             HBNBCommand().onecmd(f"class.count()")
             self.assertEqual(f.getvalue().strip(), "0")
 
-    def test_update_errors(self):
+    def test_default_errors(self):
         cmds = ['all', 'create', 'destroy', 'count', 'show', 'update']
         for cmd in cmds:
             with patch('sys.stdout', new=StringIO()) as f:
@@ -325,6 +325,12 @@ class TestConsole(unittest.TestCase):
             with patch('sys.stdout', new=StringIO()) as f:
                 HBNBCommand().onecmd(f"{class_name}.create()")
                 self.assertEqual(f.getvalue(), no_class)
-
         
-            
+        for class_name in classes:
+            with patch('sys.stdout', new=StringIO()) as f:
+                HBNBCommand().onecmd(f"{class_name}.create()")
+                self.assertEqual(f.getvalue(), no_class)
+
+
+if __name__ == '__main__':
+    HBNBCommand().cmdloop()
