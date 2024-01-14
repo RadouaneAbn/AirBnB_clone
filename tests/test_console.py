@@ -341,6 +341,7 @@ class TestConsole(unittest.TestCase):
                 HBNBCommand().onecmd(f"{class_name}.show()")
                 self.assertEqual(f.getvalue(), id_missing)
 
+        
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
