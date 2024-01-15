@@ -386,6 +386,11 @@ class TestConsole(unittest.TestCase):
             HBNBCommand().onecmd(f"class.count()")
             self.assertEqual(f.getvalue().strip(), "0")
 
+        for cl in classes:
+            with patch('sys.stdout', new=StringIO()) as f:
+                HBNBCommand().onecmd(f"{cl}.destroy(\"wrong_id\")")
+                self.assertEqual(f.getvalue(), no_inst)
+
     def test_default_dictionary(self):
         ids = {}
         for class_name in classes:
